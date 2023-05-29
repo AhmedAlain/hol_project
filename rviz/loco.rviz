@@ -4,16 +4,15 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Status1
+        - /Global Options1
         - /TF1/Frames1
         - /Odometry1
         - /Odometry1/Shape1
-        - /Odometry1/Covariance1
         - /Odometry1/Covariance1/Position1
-        - /Odometry2/Covariance1
-        - /Odometry2/Covariance1/Position1
-      Splitter Ratio: 0.5164557099342346
-    Tree Height: 256
+        - /Odometry1/Covariance1/Orientation1
+        - /Odometry2
+      Splitter Ratio: 0.5
+    Tree Height: 797
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -124,102 +123,47 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        turtlebot/kobuki/base_footprint:
+        kobuki/base_footprint:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        turtlebot/kobuki/base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/kobuki/cliff_sensor_front_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        turtlebot/kobuki/cliff_sensor_left_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        turtlebot/kobuki/cliff_sensor_right_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        turtlebot/kobuki/imu:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        turtlebot/kobuki/plates_link:
+        kobuki/base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        turtlebot/kobuki/rplidar:
+        kobuki/cliff_sensor_front_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        kobuki/cliff_sensor_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        kobuki/cliff_sensor_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        kobuki/imu:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        kobuki/plates_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        turtlebot/kobuki/wheel_left_link:
+        kobuki/rplidar:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        turtlebot/kobuki/wheel_right_link:
+        kobuki/wheel_left_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        turtlebot/swiftpro/link1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/swiftpro/link2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/swiftpro/link3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/swiftpro/link4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/swiftpro/link5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/swiftpro/link6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/swiftpro/link7:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/swiftpro/link8A:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/swiftpro/link8B:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/swiftpro/link9:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        turtlebot/swiftpro/manipulator_base_link:
+        kobuki/wheel_right_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -263,52 +207,30 @@ Visualization Manager:
           Value: false
         camera_link:
           Value: false
-        turtlebot/kobuki/base_footprint:
+        kobuki/base_footprint:
           Value: true
-        turtlebot/kobuki/base_link:
-          Value: false
-        turtlebot/kobuki/cliff_sensor_front_link:
-          Value: false
-        turtlebot/kobuki/cliff_sensor_left_link:
-          Value: false
-        turtlebot/kobuki/cliff_sensor_right_link:
-          Value: false
-        turtlebot/kobuki/imu:
+        kobuki/base_link:
           Value: true
-        turtlebot/kobuki/plates_link:
-          Value: false
-        turtlebot/kobuki/realsense_color:
+        kobuki/cliff_sensor_front_link:
           Value: true
-        turtlebot/kobuki/realsense_depth:
+        kobuki/cliff_sensor_left_link:
           Value: true
-        turtlebot/kobuki/rplidar:
+        kobuki/cliff_sensor_right_link:
           Value: true
-        turtlebot/kobuki/wheel_left_link:
-          Value: false
-        turtlebot/kobuki/wheel_right_link:
-          Value: false
-        turtlebot/swiftpro/link1:
-          Value: false
-        turtlebot/swiftpro/link2:
-          Value: false
-        turtlebot/swiftpro/link3:
-          Value: false
-        turtlebot/swiftpro/link4:
-          Value: false
-        turtlebot/swiftpro/link5:
-          Value: false
-        turtlebot/swiftpro/link6:
-          Value: false
-        turtlebot/swiftpro/link7:
-          Value: false
-        turtlebot/swiftpro/link8A:
-          Value: false
-        turtlebot/swiftpro/link8B:
-          Value: false
-        turtlebot/swiftpro/link9:
-          Value: false
-        turtlebot/swiftpro/manipulator_base_link:
-          Value: false
+        kobuki/imu:
+          Value: true
+        kobuki/plates_link:
+          Value: true
+        kobuki/realsense_color:
+          Value: true
+        kobuki/realsense_depth:
+          Value: true
+        kobuki/rplidar:
+          Value: true
+        kobuki/wheel_left_link:
+          Value: true
+        kobuki/wheel_right_link:
+          Value: true
         world_ned:
           Value: false
       Marker Alpha: 1
@@ -319,17 +241,17 @@ Visualization Manager:
       Show Names: false
       Tree:
         world_ned:
-          turtlebot/kobuki/base_footprint:
-            turtlebot/kobuki/base_link:
-              turtlebot/kobuki/cliff_sensor_front_link:
+          kobuki/base_footprint:
+            kobuki/base_link:
+              kobuki/cliff_sensor_front_link:
                 {}
-              turtlebot/kobuki/cliff_sensor_left_link:
+              kobuki/cliff_sensor_left_link:
                 {}
-              turtlebot/kobuki/cliff_sensor_right_link:
+              kobuki/cliff_sensor_right_link:
                 {}
-              turtlebot/kobuki/imu:
+              kobuki/imu:
                 {}
-              turtlebot/kobuki/plates_link:
+              kobuki/plates_link:
                 camera_bottom_screw_frame:
                   camera_link:
                     camera_accel_frame:
@@ -337,11 +259,11 @@ Visualization Manager:
                         {}
                     camera_color_frame:
                       camera_color_optical_frame:
-                        turtlebot/kobuki/realsense_color:
+                        kobuki/realsense_color:
                           {}
                     camera_depth_frame:
                       camera_depth_optical_frame:
-                        turtlebot/kobuki/realsense_depth:
+                        kobuki/realsense_depth:
                           {}
                     camera_gyro_frame:
                       camera_gyro_optical_frame:
@@ -352,34 +274,18 @@ Visualization Manager:
                     camera_infra2_frame:
                       camera_infra2_optical_frame:
                         {}
-                turtlebot/kobuki/rplidar:
+                kobuki/rplidar:
                   {}
-              turtlebot/kobuki/wheel_left_link:
+              kobuki/wheel_left_link:
                 {}
-              turtlebot/kobuki/wheel_right_link:
+              kobuki/wheel_right_link:
                 {}
-              turtlebot/swiftpro/manipulator_base_link:
-                turtlebot/swiftpro/link1:
-                  turtlebot/swiftpro/link2:
-                    turtlebot/swiftpro/link3:
-                      turtlebot/swiftpro/link8A:
-                        turtlebot/swiftpro/link8B:
-                          {}
-                        turtlebot/swiftpro/link9:
-                          {}
-                    turtlebot/swiftpro/link4:
-                      {}
-                  turtlebot/swiftpro/link5:
-                    {}
-                  turtlebot/swiftpro/link6:
-                    turtlebot/swiftpro/link7:
-                      {}
       Update Interval: 0
       Value: true
     - Class: rviz/Camera
       Enabled: false
       Image Rendering: background and overlay
-      Image Topic: /turtlebot/kobuki/sensors/realsense/color/image_color
+      Image Topic: /kobuki/sensors/realsense/color/image_color
       Name: Realsense Color
       Overlay Alpha: 0.5
       Queue Size: 2
@@ -390,8 +296,6 @@ Visualization Manager:
         Grid: true
         MarkerArray: true
         Odometry: true
-        Path: true
-        Pose: true
         RPLidar: true
         Realsense Depth: true
         RobotModel: true
@@ -401,7 +305,7 @@ Visualization Manager:
     - Class: rviz/Camera
       Enabled: false
       Image Rendering: background and overlay
-      Image Topic: /turtlebot/kobuki/sensors/realsense/depth/image_depth
+      Image Topic: /kobuki/sensors/realsense/depth/image_depth
       Name: Realsense Depth
       Overlay Alpha: 0.5
       Queue Size: 2
@@ -412,8 +316,6 @@ Visualization Manager:
         Grid: true
         MarkerArray: true
         Odometry: true
-        Path: true
-        Pose: true
         RPLidar: true
         Realsense Color: true
         RobotModel: true
@@ -443,26 +345,96 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.009999999776482582
       Style: Flat Squares
-      Topic: /turtlebot/kobuki/sensors/rplidar
+      Topic: /kobuki/sensors/rplidar
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Alpha: 1
-      Axes Length: 0.10000000149011612
-      Axes Radius: 0.009999999776482582
-      Class: rviz/Pose
-      Color: 255; 25; 0
+    - Angle Tolerance: 0.10000000149011612
+      Class: rviz/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.30000001192092896
+          Color: 204; 51; 204
+          Scale: 4
+          Value: true
+        Value: true
       Enabled: true
-      Head Length: 0.30000001192092896
-      Head Radius: 0.10000000149011612
-      Name: Pose
+      Keep: 100
+      Name: Odometry
+      Position Tolerance: 0.10000000149011612
       Queue Size: 10
-      Shaft Length: 1
-      Shaft Radius: 0.05000000074505806
-      Shape: Axes
-      Topic: /position_EE
+      Shape:
+        Alpha: 1
+        Axes Length: 1
+        Axes Radius: 0.10000000149011612
+        Color: 120; 100; 0
+        Head Length: 0.05000000074505806
+        Head Radius: 0.05000000074505806
+        Shaft Length: 0.10000000149011612
+        Shaft Radius: 0.05000000074505806
+        Value: Arrow
+      Topic: /kobuki/odom
       Unreliable: false
+      Value: true
+    - Angle Tolerance: 0.10000000149011612
+      Class: rviz/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.30000001192092896
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
+      Enabled: true
+      Keep: 100
+      Name: Odometry
+      Position Tolerance: 0.10000000149011612
+      Queue Size: 10
+      Shape:
+        Alpha: 1
+        Axes Length: 1
+        Axes Radius: 0.10000000149011612
+        Color: 255; 25; 0
+        Head Length: 0.05000000074505806
+        Head Radius: 0.05000000074505806
+        Shaft Length: 0.20000000298023224
+        Shaft Radius: 0.05000000074505806
+        Value: Arrow
+      Topic: /Ground_truth
+      Unreliable: false
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /beacons_viz
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /beacons_viz
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
@@ -487,132 +459,6 @@ Visualization Manager:
       Namespaces:
         "": true
       Queue Size: 100
-      Value: true
-    - Angle Tolerance: 0.10000000149011612
-      Class: rviz/Odometry
-      Covariance:
-        Orientation:
-          Alpha: 0.5
-          Color: 255; 255; 127
-          Color Style: Unique
-          Frame: Local
-          Offset: 1
-          Scale: 1
-          Value: true
-        Position:
-          Alpha: 0.30000001192092896
-          Color: 204; 51; 204
-          Scale: 5
-          Value: true
-        Value: true
-      Enabled: true
-      Keep: 100
-      Name: Odometry
-      Position Tolerance: 0.10000000149011612
-      Queue Size: 10
-      Shape:
-        Alpha: 1
-        Axes Length: 1
-        Axes Radius: 0.10000000149011612
-        Color: 52; 101; 164
-        Head Length: 0.10000000149011612
-        Head Radius: 0.10000000149011612
-        Shaft Length: 0.30000001192092896
-        Shaft Radius: 0.05000000074505806
-        Value: Arrow
-      Topic: /turtlebot/odom
-      Unreliable: false
-      Value: true
-    - Angle Tolerance: 0.10000000149011612
-      Class: rviz/Odometry
-      Covariance:
-        Orientation:
-          Alpha: 0.5
-          Color: 255; 255; 127
-          Color Style: Unique
-          Frame: Local
-          Offset: 1
-          Scale: 1
-          Value: true
-        Position:
-          Alpha: 0.30000001192092896
-          Color: 204; 51; 204
-          Scale: 5
-          Value: true
-        Value: true
-      Enabled: true
-      Keep: 100
-      Name: Odometry
-      Position Tolerance: 0.10000000149011612
-      Queue Size: 10
-      Shape:
-        Alpha: 1
-        Axes Length: 1
-        Axes Radius: 0.10000000149011612
-        Color: 255; 25; 0
-        Head Length: 0.10000000149011612
-        Head Radius: 0.10000000149011612
-        Shaft Length: 0.30000001192092896
-        Shaft Radius: 0.05000000074505806
-        Value: Arrow
-      Topic: /turtlebot/kobuki/ground_truth
-      Unreliable: false
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /beacons_viz
-      Name: MarkerArray
-      Namespaces:
-        "": true
-      Queue Size: 100
-      Value: true
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 25; 255; 0
-      Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Lines
-      Line Width: 0.029999999329447746
-      Name: Path
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Queue Size: 10
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /robot_path
-      Unreliable: false
-      Value: true
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 92; 53; 102
-      Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Lines
-      Line Width: 0.029999999329447746
-      Name: Path
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Queue Size: 10
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /gt_path
-      Unreliable: false
       Value: true
   Enabled: true
   Global Options:
@@ -642,7 +488,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 8.080354690551758
+      Distance: 25.597286224365234
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -650,69 +496,29 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.16073857247829437
-        Y: 0.10273681581020355
-        Z: -0.1204710379242897
+        X: -0.09210747480392456
+        Y: -0.18100367486476898
+        Z: -0.03414276987314224
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: true
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 1.1802018880844116
       Target Frame: <Fixed Frame>
-      Yaw: 1.5700000524520874
-    Saved:
-      - Class: rviz/Orbit
-        Distance: 8.080354690551758
-        Enable Stereo Rendering:
-          Stereo Eye Separation: 0.05999999865889549
-          Stereo Focal Distance: 1
-          Swap Stereo Eyes: false
-          Value: false
-        Field of View: 0.7853981852531433
-        Focal Point:
-          X: -0.16073857247829437
-          Y: 0.10273681581020355
-          Z: -0.1204710379242897
-        Focal Shape Fixed Size: true
-        Focal Shape Size: 0.05000000074505806
-        Invert Z Axis: true
-        Name: Orbit
-        Near Clip Distance: 0.009999999776482582
-        Pitch: 1.5697963237762451
-        Target Frame: <Fixed Frame>
-        Yaw: 1.5700000524520874
-      - Class: rviz/Orbit
-        Distance: 8.080354690551758
-        Enable Stereo Rendering:
-          Stereo Eye Separation: 0.05999999865889549
-          Stereo Focal Distance: 1
-          Swap Stereo Eyes: false
-          Value: false
-        Field of View: 0.7853981852531433
-        Focal Point:
-          X: -0.16073857247829437
-          Y: 0.10273681581020355
-          Z: -0.1204710379242897
-        Focal Shape Fixed Size: true
-        Focal Shape Size: 0.05000000074505806
-        Invert Z Axis: true
-        Name: Orbit
-        Near Clip Distance: 0.009999999776482582
-        Pitch: 1.5697963237762451
-        Target Frame: <Fixed Frame>
-        Yaw: 1.5700000524520874
+      Yaw: 1.4685767889022827
+    Saved: ~
 Window Geometry:
   Displays:
-    collapsed: true
+    collapsed: false
   Height: 1016
-  Hide Left Dock: true
+  Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000002970000035afc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000003d0000013d000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001e005200650061006c00730065006e0073006500200043006f006c006f00720000000180000001a60000001600fffffffb0000001e005200650061006c00730065006e00730065002000440065007000740068000000032c0000006b0000001600ffffff00000001000001000000035afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003d0000035a000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007380000003efc0100000002fb0000000800540069006d0065010000000000000738000003bc00fffffffb0000000800540069006d00650100000000000004500000000000000000000006320000035a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001e60000035afc020000000cfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d0000035a000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001e005200650061006c00730065006e0073006500200043006f006c006f0072000000010c000000fd0000001600fffffffb0000001e005200650061006c00730065006e00730065002000440065007000740068000000020f000001150000001600fffffffb0000001e005200650061006c00730065006e0073006500200043006f006c006f00720100000272000000910000000000000000fb0000001e005200650061006c00730065006e0073006500200044006500700074006801000003090000008e0000000000000000000000010000010f000003a1fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d000003a1000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007380000003efc0100000002fb0000000800540069006d0065010000000000000738000003bc00fffffffb0000000800540069006d006501000000000000045000000000000000000000054c0000035a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Realsense Color:
-    collapsed: true
+    collapsed: false
   Realsense Depth:
-    collapsed: true
+    collapsed: false
   Selection:
     collapsed: false
   Time:

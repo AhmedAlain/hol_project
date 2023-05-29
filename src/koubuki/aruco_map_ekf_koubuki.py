@@ -52,7 +52,7 @@ class Robot:
 
         # Robot position initialization
         # self.x = 0.0
-        # self.y = 0.0
+        # self.y = -0.0
         # self.th = 0
         self.x = 3.0
         self.y = -0.78 
@@ -69,6 +69,14 @@ class Robot:
         self.v_ino = np.array([[0.0], [0.0]])
 
         # Map initialization
+
+        # my map
+        # self.aruco_id_map = {
+        #     '0': [0.3, 0.0, -0.1],
+        #     '1': [0.3, 0.15, -0.1],
+        #     '2': [5.0, -5.0, -2.0],
+        #     '4': [-5.0, -5.0, -2.0]
+        # }
         # professor map
         self.aruco_id_map = {
             '0': [0.3, 0.0, -0.1],
@@ -89,13 +97,14 @@ class Robot:
         self.Qk = np.array([[self.right_wheel_noise_sigma**2, 0],
                             [0, self.left_wheel_noise_sigma**2]])
 
-        
+        # Odom publisher and subscriber initialization
+        # self.sub = rospy.Subscriber(
+        #     '/kobuki/joint_states', JointState, self.joint_state_callback)
         self.sub = rospy.Subscriber(
-            '/turtlebot/joint_states', JointState, self.joint_state_callback)
+            '/kobuki/joint_states', JointState, self.joint_state_callback)
         
         self.odom_pub = rospy.Publisher(
-            '/turtlebot/odom', Odometry, queue_size=10)
-        
+            '/kobuki/odom', Odometry, queue_size=10)
         self.modem_sub = rospy.Subscriber(
             'measurd_data', Float32MultiArray, self.aruco_detection)
         
@@ -106,11 +115,11 @@ class Robot:
         self.tf_br = tf.TransformBroadcaster()
 
     def joint_state_callback(self, msg):
-        if msg.name[0] == "turtlebot/kobuki/wheel_left_joint":
+        if msg.name[0] == "kobuki/wheel_left_joint":
             self.left_wheel_vel = msg.velocity[0]
             self.left_wheel_rec = True
 
-        elif msg.name[0] == "turtlebot/kobuki/wheel_right_joint":
+        elif msg.name[0] == "kobuki/wheel_right_joint":
             self.right_wheel_vel = msg.velocity[0]
 
             if self.left_wheel_rec:
@@ -150,7 +159,9 @@ class Robot:
                 self.odom_path_pub()
 
     def aruco_detection(self, msg):
-        
+        # return
+        # if msg.data[0] != 41:
+        #     return
         # Update the observation model with data from the message
         self.z[0] = msg.data[1]
         self.z[1] = wrap_angle(msg.data[2])
@@ -165,7 +176,8 @@ class Robot:
         
         r = math.sqrt((delta_x)**2 + (delta_y)**2)
         a = float(wrap_angle(math.atan2((delta_y), (delta_x)) - self.xk[2]))
-        
+        # print("x_r = ", r*maaruco_map_ekf_polarth.cos(a))
+        # print("x_r = ", r*math.sin(a))
         hxk = np.array([[r],
                         [a]])
         print("hxk", hxk)
@@ -269,7 +281,7 @@ class Robot:
         odom = Odometry()
         odom.header.stamp = rospy.Time.now()
         odom.header.frame_id = "world_ned"
-        odom.child_frame_id = "turtlebot/kobuki/base_footprint"
+        odom.child_frame_id = "kobuki/base_footprint"
 
         odom.pose.pose.position.x = self.xk[0]
         odom.pose.pose.position.y = self.xk[1]
@@ -280,7 +292,8 @@ class Robot:
         odom.pose.pose.orientation.w = q[3]
 
         odom.pose.covariance = [self.Pk[0, 0], self.Pk[0, 1], 0, 0, 0, self.Pk[0, 2],
-                                self.Pk[1, 0], self.Pk[1, 1], 0, 0, 0, self.Pk[1, 2],
+                                self.Pk[1, 0], self.Pk[1,
+                                                       1], 0, 0, 0, self.Pk[1, 2],
                                 0, 0, 0, 0, 0, 0,
                                 0, 0, 0, 0, 0, 0,
                                 0, 0, 0, 0, 0, 0,
@@ -297,7 +310,7 @@ class Robot:
 
 if __name__ == '__main__':
 
-    rospy.init_node('aruco_ekf_map')
+    rospy.init_node('differential_drive')
 
     robot = Robot()
 

@@ -5,7 +5,7 @@
     <arg name="scenario_description" default="$(find turtlebot_simulation)/scenarios/turtlebot_hol_circuit2_arucos.scn"/>
     <arg name="simulation_rate" default="1000.0"/>
     <arg name="graphics_resolution" default="1200 800"/>
-    <arg name="graphics_quality" default="high"/>
+    <arg name="graphics_quality" default="low"/>
 
     <!-- Static transform -->
     <node name="realsense_color" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 camera_color_optical_frame $(arg robot_name)/kobuki/realsense_color 100"/>
@@ -40,10 +40,10 @@
     </group>
     
     <!-- EKF MAP -->
-    <node pkg="hol_project" type="aruco_ekf_map.py" name="aruco_map_ekf_polar" output="screen"/>
+    <!-- <node pkg="hol_project" type="aruco_ekf_map_turtlebot.py" name="aruco_map_ekf_polar" output="screen"/> -->
 
     <!-- EKF SLAM -->
-    <!-- <node pkg="hol_project" type="aruco_ekf_slam.py" name="aruco_slam_ekf_polar" output="screen"/> -->
+    <node pkg="hol_project" type="aruco_ekf_slam_turtlebot.py" name="aruco_ekf_slam_turtlebot" output="screen"/>
 
     <!-- Detection node -->
     <node pkg="hol_project" type="cam_detection.py" name="cam_detection" output="screen"/>

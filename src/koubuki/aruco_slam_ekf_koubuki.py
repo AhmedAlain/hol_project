@@ -14,7 +14,7 @@ from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import JointState, NavSatFix
 from std_msgs.msg import Header, Float32MultiArray
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Point
 from nav_msgs.msg import Path
 from visualization_msgs.msg import Marker, MarkerArray
 
@@ -101,14 +101,12 @@ class Robot:
         # self.sub = rospy.Subscriber(
         #     '/kobuki/joint_states', JointState, self.joint_state_callback)
         self.sub = rospy.Subscriber(
-            '/turtlebot/joint_states', JointState, self.joint_state_callback)
+            '/kobuki/joint_states', JointState, self.joint_state_callback)
         
         self.odom_pub = rospy.Publisher(
-            '/turtlebot/odom', Odometry, queue_size=10)
-        
+            '/kobuki/odom', Odometry, queue_size=10)
         self.modem_sub = rospy.Subscriber(
             'measurd_data', Float32MultiArray, self.aruco_detection)
-        
         self.arucos_belief_pub = rospy.Publisher("/arucos_belief", MarkerArray)
         self.arucos_h_pub = rospy.Publisher("/arucos_obzerved_h", MarkerArray)
         self.arucos_z_pub = rospy.Publisher("/arucos_obzerved_z", MarkerArray)
@@ -124,11 +122,11 @@ class Robot:
 
 
     def joint_state_callback(self, msg):
-        if msg.name[0] == "turtlebot/kobuki/wheel_left_joint":
+        if msg.name[0] == "kobuki/wheel_left_joint":
             self.left_wheel_vel = msg.velocity[0]
             self.left_wheel_rec = True
 
-        elif msg.name[0] == "turtlebot/kobuki/wheel_right_joint":
+        elif msg.name[0] == "kobuki/wheel_right_joint":
             self.right_wheel_vel = msg.velocity[0]
 
             if self.left_wheel_rec:
@@ -162,101 +160,91 @@ class Robot:
 
                 # Prediction step
                 self.prediction(dt)
+                # print("xk",self.xk)
+                # print("aruco id",self.arucos)
+                # print(self.Pk)
 
                 # Odom path publisher
                 self.odom_path_pub()
 
     def aruco_detection(self, msg):
-        """
-        Performs detection of an ArUco feature and updates the SLAM system accordingly.
-        
-        Args:
-            msg (object): Message containing ArUco feature data.
-            
-        Returns:
-            None
-        """
-            
         # Update the observation model with data from the message
-        self.z[0] = msg.data[1]  # Update range measurement
-        self.z[1] = wrap_angle(msg.data[2])  # Update azimuth measurement
-        aruco_id = msg.data[0]  # Get the ArUco feature ID
-        
+        # if msg.data[0] != 41:
+        #     return
+        self.z[0] = msg.data[1]
+        self.z[1] = wrap_angle(msg.data[2])
+        # self.z[2] = wrap_angle(msg.data[3])
+        aruco_id = msg.data[0]
         if aruco_id not in self.arucos:
-            # New feature detected, add it to the SLAM system
-            print("aruco_id", aruco_id)
-            self.add_new_feature(self.z[0], self.z[1], aruco_id)
+            print("aruco_id",aruco_id)
+            self.add_new_feature(self.add_new_feature(self.z[0], self.z[1],aruco_id))
         else:
-            # Existing feature detected, perform measurement update
-
-            print("Aruco Id", aruco_id)
             
+            print("Aruco Id", aruco_id)
             # Add sensor noise to the measurement covariance matrix
             range_sigma = 0.5
-            azimuth_sigma = 0.25
+            azmith_sigma = 0.25
             Rk = np.array([[range_sigma**2, 0],
-                        [0, azimuth_sigma**2]])
+                        [0, azmith_sigma**2]])
+            # print("x",self.xk[self.modem.index(msg.beacon_id)+3])
+            # print("y",self.xk[self.modem.index(msg.beacon_id)+4] )
+            delta_x = float(-self.xk[0] + self.xk[self.arucos.index(aruco_id)+3])
+            delta_y = float(-self.xk[1] + self.xk[self.arucos.index(aruco_id)+4])
+            # print("xk",self.xk)
+            # print("x ",self.xk[self.arucos.index(aruco_id)+3])
+            # print("y ",self.xk[self.arucos.index(aruco_id)+4])
 
-            delta_x = float(-self.xk[0] + self.xk[self.arucos.index(aruco_id) + 3])
-            delta_y = float(-self.xk[1] + self.xk[self.arucos.index(aruco_id) + 4])
 
-            H_list = np.zeros((2, len(self.arucos)))
+            H_list = np.zeros((2, (len(self.arucos))))
+            # print("H_list",H_list.shape)
+            print("obzervation from sensor", self.z)
+            r = math.sqrt((delta_x)**2 + (delta_y)**2)
+            a = float(wrap_angle(math.atan2((delta_y), (delta_x)) - self.xk[2]))
 
-            print("observation from sensor", self.z)
-            
-            r = math.sqrt(delta_x**2 + delta_y**2)
-            a = float(wrap_angle(math.atan2(delta_y, delta_x) - self.xk[2]))
-
-            # Convert predicted and measured coordinates to world frame
-            x_h, y_h = self.T_R_W(r, a)
-            x_z, y_z = self.T_R_W(self.z[0], self.z[1])
-            
-            print("x_h, y_h", x_h, y_h)
-            
-            # Publish markers for visualization
-            self.markerpub_h(x_h, y_h, aruco_id)
-            self.markerpub_z(x_z, y_z, aruco_id)
-            
+            x_h, y_h = self.T_R_W(r,a)
+            x_z, y_z = self.T_R_W(self.z[0],self.z[1])
+            print("x_h, y_h",x_h, y_h)
+            self.markerpub_h(x_h,y_h,aruco_id)
+            self.markerpub_z(x_z,y_z,aruco_id)
             hxk = np.array([[r],
                             [a]])
-            
-            print("observation from equation hxk", hxk)
-
-            # Calculate the Jacobian matrix H
+            print("obzervation from equation hxk", hxk)
             H = np.array([[-delta_x / math.sqrt(delta_x**2 + delta_y**2),
-                        -delta_y / math.sqrt(delta_x**2 + delta_y**2),
+                            -delta_y / math.sqrt(delta_x**2 + delta_y**2),
                         0],
                         [delta_y / (delta_x**2 + delta_y**2),
-                        delta_x / (delta_x**2 + delta_y**2),
-                        -1]])
-
-            H_list = np.hstack((H, H_list))
+                            delta_x / (delta_x**2 + delta_y**2),
+                            -1]])
+            
+            H_list = np.hstack((H,H_list))
             
             J1 = np.array([[delta_x / math.sqrt(delta_x**2 + delta_y**2),
                             delta_y / math.sqrt(delta_x**2 + delta_y**2)],
-                        [delta_y / (delta_x**2 + delta_y**2),
+                            [delta_y / (delta_x**2 + delta_y**2),
                             delta_x / (delta_x**2 + delta_y**2)]])
-
-            print("J1", J1)
+            # J1 = np.array([[math.cos(self.xk[2]), math.sin(self.xk[2])],
+            #                [-math.sin(self.xk[2]), math.cos(self.xk[2])]])
+            print("J1",J1)
             
-            N = self.arucos.index(aruco_id) + 3
+            N = self.arucos.index(aruco_id )+3
+            # print("H_list",H_list)
             H_list[0:2, N: N+2] = J1
+            # print("H_list",H_list.shape)
             
-            all_measured = [aruco_id, self.z[0], self.z[1], r, a]
-            self.floatmat2_pub.publish(Float32MultiArray(data=all_measured))
-            self.floatmat3_pub.publish(Float32MultiArray(data=self.arucos))
-            
-            # Update the SLAM system using the measurement and Jacobian matrix
-            self.update(hxk, H_list, Rk)
+            all_measured = [aruco_id , self.z[0], self.z[1], r, a ]
+            self.floatmat2_pub.publish(Float32MultiArray(data = all_measured))
+            self.floatmat3_pub.publish(Float32MultiArray(data = self.arucos))
+        
+            # updating process
+            self.update(hxk,H_list,Rk)
 
-            # Publish the odom path
+            # Odom path publisher
             self.odom_path_pub()
 
-            # Publish markers
+            # publishing markers
             self.markerpub()
 
             return
-
           
 
     def prediction(self, dt):
@@ -351,66 +339,54 @@ class Robot:
         else:
             print("more thn chi-square will not update")
 
-    def add_new_feature(self, range, azimuth, id):
-        """
-        Adds a new feature to the SLAM system based on range and azimuth measurements.
-        
-        Args:
-            range (float): Range measurement of the new feature.
-            azimuth (float): Azimuth measurement of the new feature.
-            id (int): Identifier of the new feature.
-            
-        Returns:
-            None
-        """
-            
-        # Append the new feature ID and a placeholder value to the arucos list
+    def add_new_feature(self,range,azimuth, id):
         self.arucos.append(id)
-        self.arucos.append(9999)
-
-        # Convert polar coordinates of the new feature to Cartesian coordinates in the world frame
-        x_predict = range * math.cos(azimuth)  # x-coordinate prediction
-        y_predict = range * math.sin(azimuth)  # y-coordinate prediction
-
-        x_wo = x_predict * math.cos(self.xk[2]) - y_predict * math.sin(self.xk[2]) + self.xk[0]  # world x-coordinate
-        y_wo = x_predict * math.sin(self.xk[2]) + y_predict * math.cos(self.xk[2]) + self.xk[1]  # world y-coordinate
-
-        print("xw, yw {}, {}".format(x_wo, y_wo))
+        self.arucos.append(0)
+        # print("id",id)
+        x_predict = range*math.cos(azimuth)
+        y_predict = range*math.sin(azimuth)
+        # x_predict = range1*math.cos(azimuth) #*math.cos(elevation)
+        # y_predict = -range1*math.sin(azimuth) #*math.cos(elevation)
+        
+        # print("xp,yp {}, {}".format(x_predict,y_predict))
+        # print("x_predict",x_predict)
+        # print("y_predict",y_predict)
+        x_wo = x_predict*math.cos(self.xk[2]) - y_predict*math.sin(self.xk[2]) + self.xk[0]
+        y_wo = x_predict*math.sin(self.xk[2]) + y_predict*math.cos(self.xk[2]) + self.xk[1]
+        # print("x_w",x_wo)
+        # print("y_w",y_wo)
+        print("xw,yw {}, {}".format(x_wo,y_wo))
 
         N = len(self.xk)
-
-        # Add the new feature's Cartesian coordinates to the state vector
         self.xk = np.vstack((self.xk, x_wo))
         self.xk = np.vstack((self.xk, y_wo))
 
-        # Calculate the Jacobian matrix J_1
         J_1 = np.array([[1, 0, float(-x_predict*math.sin(self.xk[2])-y_predict*math.cos(self.xk[2]))],
                         [0, 1,  float(x_predict*math.cos(self.xk[2])-y_predict*math.sin(self.xk[2]))]])
+        
 
-        # Calculate the Jacobian matrix J_2
         J_2 = np.array([[float(math.cos(float(self.xk[2]) + azimuth)), float(math.sin(float(self.xk[2]) + azimuth))],
-                        [float(-range*(math.sin(float(self.xk[2]) + azimuth))), float(-range*math.sin(self.xk[2])*math.sin(azimuth)) + float(range*math.cos(self.xk[2])*math.cos(azimuth))]])
+                        [ float(-range*(math.sin(float(self.xk[2]) + azimuth))), float(-range*math.sin(self.xk[2])*math.sin(azimuth)) + float(range*math.cos(self.xk[2])*math.cos(azimuth))]])
 
-        print("J2", J_2)
-
-        F_k_ = np.eye(N)  # Create an identity matrix of size (3 + 2n) * (3 + 2n)
-
-        # Construct the G_1K matrix by stacking F_k_ and J_1
-        if N < 4:
+        F_k_ = np.eye(N) # First (3 * 2n) * (3 * 2n) matrix should be identity matrix 
+        if N < 4 :
             G_1K = np.vstack((F_k_, J_1))
         else:
             new = np.zeros((2, N))
-            new[0:2, 0:3] = J_1
-            G_1K = np.vstack((F_k_, new))
+            new[0:2, 0:3] = J_1                
+            G_1K = np.vstack((F_k_, new)) # (3 + 2n + 2) * (3 + 2n)
 
-        G_2k = np.zeros((N + 2, 2))  # Create a matrix of zeros of size (3 + 2n + 2) * 2
-        G_2k[N: N + 2, 0:2] = J_2
+        G_2k = np.zeros((N + 2, 2))# (3 + 2n + 2) * 2
+        G_2k[N : N + 2, 0 : 2] = J_2
+        # print("G_1k",G_1K, G_1K.shape)
+        # print("G_2k",G_2k, G_2k.shape)
+        
+        self.Pk = G_1K@self.Pk@np.transpose(G_1K) + G_2k@self.Qk@np.transpose(G_2k)
+        # print("pk",self.Pk, self.Pk.shape)
 
-        # Update the covariance matrix Pk using the matrices G_1K, G_2k, and self.Qk
-        self.Pk = G_1K @ self.Pk @ np.transpose(G_1K) + G_2k @ self.Qk @ np.transpose(G_2k)
+        # print("xk ", self.xk)
 
         return
-
     
     def odom_path_pub(self):
 
@@ -421,7 +397,7 @@ class Robot:
         odom = Odometry()
         odom.header.stamp = rospy.Time.now()
         odom.header.frame_id = "world_ned"
-        odom.child_frame_id = "turtlebot/kobuki/base_footprint"
+        odom.child_frame_id = "kobuki/base_footprint"
 
         odom.pose.pose.position.x = self.xk[0]
         odom.pose.pose.position.y = self.xk[1]
@@ -449,21 +425,16 @@ class Robot:
     def markerpub(self):
         ma = MarkerArray()
         for idx in range(0, len(self.arucos), 2):
-        # for idx in range(int((self.xk.size-3)/2)):
-            # print('idx',idx)
-            # print("id",self.modem[idx])
-            arucos_num = self.arucos[idx]  # get the modem number
-            # x_index = modem_num*2 - 1   # calculate the x index in xk
-            # y_index = modem_num*2       # calculate the y index in xk
+            arucos_num = self.arucos[idx]  # get the ArUco marker number
 
             marker = Marker()
             marker.header.frame_id = "world_ned"
             marker.type = marker.SPHERE
             marker.action = marker.ADD
-            marker.id = idx*2
+            marker.id = idx * 3
             marker.header.stamp = rospy.Time.now()
-            marker.pose.position.x = self.xk[self.arucos.index(arucos_num)+3]
-            marker.pose.position.y = self.xk[self.arucos.index(arucos_num)+4]
+            marker.pose.position.x = self.xk[self.arucos.index(arucos_num) + 3]
+            marker.pose.position.y = self.xk[self.arucos.index(arucos_num) + 4]
             marker.pose.position.z = -0.1
             marker.pose.orientation.w = 0
             marker.scale.x = 0.08
@@ -474,77 +445,104 @@ class Robot:
             marker.color.g = 0.9
             ma.markers.append(marker)
 
-            # marker2 = Marker()
-            # marker2.header.frame_id = "world_ned"
-            # marker2.type = marker2.CYLINDER
-            # marker2.action = marker2.ADD
-            # marker2.id = idx*2 + 1
-            # marker2.header.stamp = rospy.Time.now()
-            # print("pk",self.Pk)
-            # cov = np.array([[self.Pk[self.arucos.index(arucos_num)+3,self.arucos.index(arucos_num)+3], self.Pk[self.arucos.index(arucos_num)+3,self.arucos.index(arucos_num)+4]],
-            #                 [self.Pk[self.arucos.index(arucos_num)+4,self.arucos.index(arucos_num)+3],self.Pk[self.arucos.index(arucos_num)+4,self.arucos.index(arucos_num)+4]]])
-            # print("cov",cov)
-
-            # marker2.pose.position.x = self.xk[self.arucos.index(arucos_num)+3]
-            # marker2.pose.position.y = self.xk[self.arucos.index(arucos_num)+4]
-            # marker2.pose.position.z = -0.1
-            # marker2.pose.orientation.w = 0
-            # marker2.scale.x = self.Pk[self.arucos.index(arucos_num)+3,self.arucos.index(arucos_num)+3]
-            # marker2.scale.y = self.Pk[self.arucos.index(arucos_num)+4,self.arucos.index(arucos_num)+4]
-            # marker2.color.b = 0.8
-            # marker2.color.a = 0.5
-            # ma.markers.append(marker2)
-
-            
-            # print("x,y {} {}".format(self.xk[self.modem[idx]+3],self.xk[self.modem[idx]+4]))
-
             marker_text = Marker()
             marker_text.header.frame_id = "world_ned"
             marker_text.type = marker_text.TEXT_VIEW_FACING
             marker_text.action = marker_text.ADD
-            marker_text.id = idx*2 + 1
-
+            marker_text.id = idx * 3 + 1
             marker_text.header.stamp = rospy.Time.now()
-            marker_text.pose.position.x = self.xk[self.arucos.index(arucos_num)+3]
-            marker_text.pose.position.y = self.xk[self.arucos.index(arucos_num)+4]
+            marker_text.pose.position.x = self.xk[self.arucos.index(arucos_num) + 3]
+            marker_text.pose.position.y = self.xk[self.arucos.index(arucos_num) + 4]
             marker_text.pose.position.z = -2.0 + 1.0
             marker_text.pose.orientation.w = -0.2
-
             marker_text.scale.z = 0.2
-
             marker_text.color.r = 0.4
             marker_text.color.a = 0.3
             marker_text.color.g = 0.9
-
-
-            marker_text.text = "Aruco "+str((arucos_num))
-
+            marker_text.text = "ArUco " + str(arucos_num)
             ma.markers.append(marker_text)
+
+            # Add uncertainty ellipse
+            uncertainty_marker = Marker()
+            uncertainty_marker.header.frame_id = "world_ned"
+            uncertainty_marker.type = uncertainty_marker.LINE_LIST
+            uncertainty_marker.action = uncertainty_marker.ADD
+            uncertainty_marker.id = idx * 3 + 2
+            uncertainty_marker.header.stamp = rospy.Time.now()
+            uncertainty_marker.pose.position.x = self.xk[self.arucos.index(arucos_num) + 3]
+            uncertainty_marker.pose.position.y = self.xk[self.arucos.index(arucos_num) + 4]
+            uncertainty_marker.pose.position.z = -0.1
+            uncertainty_marker.pose.orientation.w = 0
+
+            # Compute uncertainty ellipse parameters (assuming 2D Gaussian distribution)
+            cov_matrix = np.array([[self.Pk[self.arucos.index(arucos_num) + 3, self.arucos.index(arucos_num) + 3], self.Pk[self.arucos.index(arucos_num) + 3, self.arucos.index(arucos_num) + 4]],
+                                [self.Pk[self.arucos.index(arucos_num) + 4, self.arucos.index(arucos_num) + 3], self.Pk[self.arucos.index(arucos_num) + 4, self.arucos.index(arucos_num) + 4]]])
+
+            eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
+            major_axis_length = 2 * np.sqrt(4.605 * eigenvalues[0])  # 5.991 for 95% confidence ellipse
+            minor_axis_length = 2 * np.sqrt(4.605 * eigenvalues[1])  # 4.605 for 68% confidence ellipse
+
+            # Generate ellipse points
+            theta = np.linspace(0, 2 * np.pi, 50)
+            x = major_axis_length * np.cos(theta)
+            y = minor_axis_length * np.sin(theta)
+           # Apply rotation to ellipse points
+            ellipse_points = np.dot(np.array([x, y]).T, eigenvectors.T) #+ np.array([[uncertainty_marker.pose.position.x, uncertainty_marker.pose.position.y]]).reshape(1, 2)
+
+            # Set uncertainty marker properties
+            uncertainty_marker.scale.x = 0.01  # Line width
+            uncertainty_marker.color.r = 0.4
+            uncertainty_marker.color.a = 0.3
+            uncertainty_marker.color.g = 0.9
+
+            # Set uncertainty marker points
+            for i in range(len(theta) - 1):
+                p1 = Point()
+                p1.x = ellipse_points[i][0]
+                p1.y = ellipse_points[i][1]
+                p1.z = -0.1
+                uncertainty_marker.points.append(p1)
+
+                p2 = Point()
+                p2.x = ellipse_points[i + 1][0]
+                p2.y = ellipse_points[i + 1][1]
+                p2.z = -0.1
+                uncertainty_marker.points.append(p2)
+
+            # Connect the last point with the first point to complete the ellipse
+            p1 = Point()
+            p1.x = ellipse_points[-1][0]
+            p1.y = ellipse_points[-1][1]
+            p1.z = -0.1
+            uncertainty_marker.points.append(p1)
+
+            p2 = Point()
+            p2.x = ellipse_points[0][0]
+            p2.y = ellipse_points[0][1]
+            p2.z = -0.1
+            uncertainty_marker.points.append(p2)
+
+            # Add the uncertainty marker to the MarkerArray
+            ma.markers.append(uncertainty_marker)
+
+        self.arucos_belief_pub.publish(ma)
                     
         self.arucos_belief_pub.publish(ma)
 
-    def T_R_W(self, ran, azi):
-        """
-        Converts polar coordinates of a robot to Cartesian coordinates in the world frame.
+    def T_R_W(self,ran,azi):
+        x_predict = ran*math.cos(azi)
+        y_predict = ran*math.sin(azi)
+        # x_predict = range1*math.cos(azimuth) #*math.cos(elevation)
+        # y_predict = -range1*math.sin(azimuth) #*math.cos(elevation)
         
-        Args:
-            ran (float): Range in polar coordinates (distance from the origin).
-            azi (float): Azimuth angle in polar coordinates (angle with respect to the x-axis).
-            
-        Returns:
-            tuple: Cartesian coordinates (x, y) in the world frame.
-        """
-            
-        # Convert polar coordinates to Cartesian coordinates in the robot frame
-        x_predict = ran * math.cos(azi)  # x-coordinate prediction
-        y_predict = ran * math.sin(azi)  # y-coordinate prediction
-
-        # Convert Cartesian coordinates from the robot frame to the world frame
-        x_wo = x_predict * math.cos(self.xk[2]) - y_predict * math.sin(self.xk[2]) + self.xk[0]  # world x-coordinate
-        y_wo = x_predict * math.sin(self.xk[2]) + y_predict * math.cos(self.xk[2]) + self.xk[1]  # world y-coordinate
+        # print("xp,yp {}, {}".format(x_predict,y_predict))
+        # print("x_predict",x_predict)
+        # print("y_predict",y_predict)
+        x_wo = x_predict*math.cos(self.xk[2]) - y_predict*math.sin(self.xk[2]) + self.xk[0]
+        y_wo = x_predict*math.sin(self.xk[2]) + y_predict*math.cos(self.xk[2]) + self.xk[1]
 
         return x_wo, y_wo
-        
+        ...
     def markerpub_z(self,x,y,id):
         ma = MarkerArray()
 
@@ -639,7 +637,7 @@ class Robot:
 
 if __name__ == '__main__':
 
-    rospy.init_node('aruco_slam')
+    rospy.init_node('differential_drive')
 
     robot = Robot()
 
